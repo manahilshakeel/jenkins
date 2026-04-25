@@ -4,6 +4,9 @@ pipeline {
     environment {
         VERSION = "1.0"
     }
+    tools {
+    maven 'Maven'
+    }
 
     stages {
         stage('Build') {
@@ -12,4 +15,5 @@ pipeline {
             }
         }
     }
+    
 }
