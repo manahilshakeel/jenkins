@@ -1,16 +1,65 @@
 pipeline {
     agent any
 
+    //  Environment Variable
+    environment {
+        VERSION = "1.0"
+    }
+
+    //  Tools (Make sure name matches Jenkins config)
+    tools {
+        maven 'Maven'
+    }
+
+    // 🎛 Parameters
+    parameters {
+        booleanParam(name: 'executeTests', defaultValue: true, description: 'Run test stage?')
+    }
+
     stages {
-        stage('Install Maven') {
+
+        //  Build Stage
+        stage('Build') {
             steps {
-                bat '''
-                curl -L -o maven.zip https://downloads.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.zip
-                tar -xf maven.zip
-                set PATH=%CD%\\apache-maven-3.9.9\\bin;%PATH%
-                mvn -v
-                '''
+                echo "Building version ${VERSION}"
+                
+                // For Windows
+                bat 'mvn -v'
             }
+        }
+
+        //  Test Stage (Conditional)
+        stage('Test') {
+            when {
+                expression { params.executeTests == true }
+            }
+            steps {
+                echo 'Running Tests...'
+                
+                // Example command
+                bat 'echo Tests executed'
+            }
+        }
+
+        //Deploy Stage
+        stage('Deploy') {
+            steps {
+                echo 'Deploying application...'
+                
+                bat 'echo Deployment done'
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline completed successfully!'
+        }
+        success {
+            echo 'Build succeeded ✅'
+        }
+        failure {
+            echo 'Build failed ❌'
         }
     }
 }
